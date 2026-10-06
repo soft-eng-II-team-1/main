@@ -1,0 +1,1 @@
+Before run the db_scheme.sql file create the db with name OfficeQueueManagement
