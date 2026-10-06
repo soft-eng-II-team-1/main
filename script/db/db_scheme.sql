@@ -51,7 +51,7 @@ CREATE TABLE ticket (
     id_counter UUID,
     CONSTRAINT service_foreign_key FOREIGN KEY (id_service) REFERENCES service(id_service),
     CONSTRAINT counter_foreign_key FOREIGN KEY (id_counter) REFERENCES counter(id_counter),
-    CONSTRAINT timestamp_check CHECK (serve_timestamp IS NULL OR serve_timestamp >= issue_timestamp)
+    CONSTRAINT timestamp_check CHECK (serve_timestamp IS NULL OR serve_timestamp >= issue_timestamp),
     CONSTRAINT ticket_number_per_day_unique UNIQUE (issue_date, number)
 
 );
