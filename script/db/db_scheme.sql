@@ -1,3 +1,13 @@
+/* reset: remove old objects so the script can be rerun */
+DROP TABLE IF EXISTS ticket;
+DROP TABLE IF EXISTS counter_service;
+DROP TABLE IF EXISTS counter;
+DROP TABLE IF EXISTS service;
+DROP TYPE IF EXISTS ticket_state;
+
+
+
+
 -- 1. Definizione del tipo ENUM per lo stato del ticket
 CREATE TYPE ticket_state AS ENUM (
     'PENDING',
@@ -9,7 +19,7 @@ CREATE TYPE ticket_state AS ENUM (
 CREATE TABLE service (
     id_service UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
-    avg_time INTEGER NOT NULL,
+    avg_time INTEGER NOT NULL, -- service time for request type, in seconds 
     CONSTRAINT avg_time_check CHECK (avg_time > 0)
 );
 
@@ -34,6 +44,7 @@ CREATE TABLE ticket (
     id_ticket UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     number VARCHAR(50) NOT NULL,
     state ticket_state NOT NULL,
+    issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
     issue_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     serve_timestamp TIMESTAMP WITH TIME ZONE,
     id_service UUID NOT NULL,
@@ -41,4 +52,6 @@ CREATE TABLE ticket (
     CONSTRAINT service_foreign_key FOREIGN KEY (id_service) REFERENCES service(id_service),
     CONSTRAINT counter_foreign_key FOREIGN KEY (id_counter) REFERENCES counter(id_counter),
     CONSTRAINT timestamp_check CHECK (serve_timestamp IS NULL OR serve_timestamp >= issue_timestamp)
+    CONSTRAINT ticket_number_per_day_unique UNIQUE (issue_date, number)
+
 );
