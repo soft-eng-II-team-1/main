@@ -39,4 +39,14 @@ router.post('/', requireJson, createTicketValidation, async (req, res) => {
   return res.status(201).json(ticket);
 });
 
+// GET /api/v1/tickets/queues
+router.get('/queues', async (req, res, next) => {
+  try {
+    const queues = await ticketDao.getQueues();
+    return res.status(200).json(queues);
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;

@@ -62,6 +62,53 @@ async function createTicket(serviceId) {
     }
 }
 
+/**
+ * Retrieves the queues of pending tickets for each service.
+ *
+ * @returns {Object} An object where each key is a service name and each value is an array of pending tickets.
+ */
+
+async function getQueues() {
+  const query = `
+    SELECT
+      s.id_service,
+      s.name AS service_name,
+      t.id_ticket,
+      t.number,
+      t.state,
+      t.issue_timestamp
+    FROM service s
+    LEFT JOIN ticket t
+      ON s.id_service = t.id_service
+      AND t.state = 'PENDING'
+      AND t.issue_date = CURRENT_DATE
+    ORDER BY s.name ASC, t.issue_timestamp ASC, t.number::int ASC;
+  `;
+
+  const { rows } = await pool.query(query);
+
+  const queues = {};
+
+  for (const row of rows) {
+    const serviceKey = row.service_name;
+
+    if (!queues[serviceKey]) {
+      queues[serviceKey] = [];
+    }
+
+    if (row.id_ticket) {
+      queues[serviceKey].push({
+        id: row.id_ticket,
+        number: row.number,
+        state: row.state,
+        issuedAt: row.issue_timestamp.toISOString()
+      });
+    }
+  }
+
+  return queues;
+}
+
 async function rollbackQuietly(client) {
     try {
         await client.query('ROLLBACK');
@@ -70,4 +117,7 @@ async function rollbackQuietly(client) {
     }
 }
 
-module.exports = {createTicket};
+module.exports = {
+  createTicket,
+  getQueues,
+};

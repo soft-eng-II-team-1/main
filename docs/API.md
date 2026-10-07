@@ -51,3 +51,28 @@ Creates a ticket for the selected service. The ticket is created in state `PENDI
 | 415 | `Content-Type` is not `application/json` |
 | 422 | Body is valid JSON but `serviceId` is missing or not the right type |
 | 500 | Unexpected server or database error |
+
+## `GET /tickets/queues`
+
+Returns the active queues of tickets currently in `PENDING` state, grouped by service.
+
+### Response `200 OK`
+
+```json
+{
+  "Shipping": [
+    {
+      "id": "e9c9c819-0123-4567-89ab-cdef01234567",
+      "number": "1",
+      "state": "PENDING",
+      "issuedAt": "2026-10-07T08:15:30.000Z"
+    }
+  ],
+  "Accounts": []
+}
+```
+
+### Errors
+| Status | Situation |
+|------------|---------|
+| 500 | Unexpected server or database error |

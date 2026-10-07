@@ -12,26 +12,29 @@ Content-Type: application/json
 
 { "serviceId": "00000000-0000-0000-0000-000000000000" }
 
-### 422 - missing serviceId 
+### 422 - missing serviceId
 POST {{base}}/tickets
 Content-Type: application/json
 
 {}
 
-### 422 - invalid serviceId 
+### 422 - invalid serviceId
 POST {{base}}/tickets
 Content-Type: application/json
 
 { "serviceId": "abc" }
 
-### 400 - JSON 
+### 400 - JSON
 POST {{base}}/tickets
 Content-Type: application/json
 
-{ "serviceId": 
+{ "serviceId":
 
-### 415 - wrong content type 
+### 415 - wrong content type
 POST {{base}}/tickets
 Content-Type: text/plain
 
 ciao
+
+### 200 - get ticket queues
+GET {{base}}/tickets/queues
