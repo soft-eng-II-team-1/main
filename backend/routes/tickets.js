@@ -49,4 +49,16 @@ router.get('/queues', async (req, res, next) => {
   }
 });
 
+// GET /api/v1/tickets/next
+router.get('/next', async (req, res, next) => {
+  try {
+    /*const ticket = await ticketDao.getNextTicket();
+    return res.status(200).json(ticket);*/
+
+    return res.status(200).json({ message: 'Not implemented' });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 module.exports = router;
