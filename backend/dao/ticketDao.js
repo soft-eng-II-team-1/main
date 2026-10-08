@@ -68,11 +68,12 @@ async function createTicket(serviceId) {
  * @returns {Object} An object where each key is a service name and each value is an array of pending tickets.
  */
 
-async function getQueues() {
+async function getQueues(db = pool) {
   const query = `
     SELECT
       s.id_service,
       s.name AS service_name,
+      s.avg_time,
       t.id_ticket,
       t.number,
       t.state,
@@ -85,7 +86,7 @@ async function getQueues() {
     ORDER BY s.name ASC, t.issue_timestamp ASC, t.number::int ASC;
   `;
 
-  const { rows } = await pool.query(query);
+  const { rows } = await db.query(query);
 
   const queues = {};
 
@@ -93,11 +94,14 @@ async function getQueues() {
     const serviceKey = row.service_name;
 
     if (!queues[serviceKey]) {
-      queues[serviceKey] = [];
+      queues[serviceKey] = {
+        avgTime: row.avg_time,
+        tickets: [],
+      };
     }
 
     if (row.id_ticket) {
-      queues[serviceKey].push({
+      queues[serviceKey].tickets.push({
         id: row.id_ticket,
         number: row.number,
         state: row.state,

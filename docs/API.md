@@ -60,15 +60,16 @@ Returns the active queues of tickets currently in `PENDING` state, grouped by se
 
 ```json
 {
-  "Shipping": [
-    {
-      "id": "e9c9c819-0123-4567-89ab-cdef01234567",
-      "number": "1",
-      "state": "PENDING",
-      "issuedAt": "2026-10-07T08:15:30.000Z"
-    }
-  ],
-  "Accounts": []
+  "Shipping": {
+    "avgTime": 600,
+    "tickets": [
+      { "id": "e9c9c819-0123-4567-89ab-cdef01234567", "number": "1", "state": "PENDING", "issuedAt": "2026-10-07T08:15:30.000Z" }
+    ]
+  },
+  "Accounts": {
+    "avgTime": 500,
+    "tickets": []
+  }
 }
 ```
 
