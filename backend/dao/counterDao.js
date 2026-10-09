@@ -122,6 +122,27 @@ async function callNextTicket(counterId) {
     }
 }
 
+async function getCounterById(counterId){
+    const client = await pool.connect();
+    try {
+        const result = await client.query(
+            'SELECT id_counter, number FROM counter WHERE id_counter = $1',
+            [counterId]
+        );
+
+        if(result.rowCount === 0) {
+            return null;
+        }
+
+        return result.rows[0];
+    } catch (err) {
+        await rollbackQuietly(client);
+        throw err;
+    } finally {
+        client.release();
+    }
+}
+
 
 async function rollbackQuietly(client) {
   try {
@@ -131,4 +152,4 @@ async function rollbackQuietly(client) {
   }
 }
 
-module.exports = { callNextTicket };
+module.exports = { callNextTicket, getCounterById };

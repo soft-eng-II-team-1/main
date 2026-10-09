@@ -1,8 +1,10 @@
 'use strict';
 
 const express = require('express');
-const { body, validationResult } = require('express-validator');
+const { body } = require('express-validator');
 const ticketDao = require('../dao/ticketDao');
+
+const { validateRequest } = require('./middleware/errorHandler');
 
 const router = express.Router();
 
@@ -22,7 +24,7 @@ const createTicketValidation = [
 ];
 
 // POST /api/v1/tickets
-router.post('/', requireJson, createTicketValidation, async (req, res) => {
+router.post('/', requireJson, createTicketValidation, validateRequest, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
@@ -44,18 +46,6 @@ router.get('/queues', async (req, res, next) => {
   try {
     const queues = await ticketDao.getQueues();
     return res.status(200).json(queues);
-  } catch (err) {
-    return next(err);
-  }
-});
-
-// GET /api/v1/tickets/next
-router.get('/next', async (req, res, next) => {
-  try {
-    /*const ticket = await ticketDao.getNextTicket();
-    return res.status(200).json(ticket);*/
-
-    return res.status(200).json({ message: 'Not implemented' });
   } catch (err) {
     return next(err);
   }
