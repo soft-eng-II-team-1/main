@@ -4,7 +4,7 @@ const express = require('express');
 const { body } = require('express-validator');
 const ticketDao = require('../dao/ticketDao');
 
-const { validateRequest } = require('./middleware/errorHandler');
+const { validateRequest } = require('../middleware/errorHandler');
 
 const router = express.Router();
 
@@ -25,13 +25,13 @@ const createTicketValidation = [
 
 // POST /api/v1/tickets
 router.post('/', requireJson, createTicketValidation, validateRequest, async (req, res) => {
-  const errors = validationResult(req);
+  /*const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
       error: 'Validation failed',
       details: errors.array().map((e) => ({ field: e.path, message: e.msg })),
     });
-  }
+  }*/
 
   const ticket = await ticketDao.createTicket(req.body.serviceId);
   if (ticket === null) {

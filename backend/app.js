@@ -4,8 +4,8 @@ const morgan = require('morgan');
 
 const servicesRouter = require('./routes/services');
 const ticketsRouter = require('./routes/tickets');
-const counterRouter = require('./routes/counter');
-const {notFoundHandler, errorHandler} = require('./middleware/errorHandler');
+const countersRouter = require('./routes/counters');
+const { notFoundHandler, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -21,7 +21,7 @@ app.get(baseUrl + "/test", (req, res) => {
 
 app.use(baseUrl + "/services", servicesRouter);
 app.use(baseUrl + "/tickets", ticketsRouter);
-app.use(baseUrl + "/counter", counterRouter);
+app.use(baseUrl + "/counters", countersRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
