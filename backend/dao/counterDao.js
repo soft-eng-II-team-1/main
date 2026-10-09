@@ -26,7 +26,7 @@ async function callNextTicket(counterId) {
 
         if(counterResult.rowCount === 0) {
             await client.query('ROLLBACK');
-            return {ticket: null, error: `Counter ${counterId} not found`};
+            return null;
         }
 
         const counter = counterResult.rows[0];
@@ -45,7 +45,7 @@ async function callNextTicket(counterId) {
 
         //services that counter can serve
         const counterServices = await client.query(
-            `SELECT s.name 
+            `SELECT s.name
             FROM counter_service c INNER JOIN service s ON c.id_service = s.id_service
             WHERE c.id_counter = $1`,
             [counterId]
@@ -72,7 +72,7 @@ async function callNextTicket(counterId) {
 
             const isLonger = queue.tickets.length > chosenQueue.tickets.length;
             const isFaster = queue.tickets.length === chosenQueue.tickets.length && queue.avgTime < chosenQueue.avgTime;
-            
+
             if (isLonger || isFaster) {
                 chosenService = service;
             }
@@ -80,7 +80,7 @@ async function callNextTicket(counterId) {
 
         if(chosenService === null) {
             await client.query('COMMIT');
-            return {ticket: null, error: null};
+            return {};
         }
 
         const chosenQueue = queues[chosenService];
@@ -91,29 +91,25 @@ async function callNextTicket(counterId) {
             `UPDATE ticket
             SET state = 'CALLED', id_counter = $1
             WHERE id_ticket = $2 AND state = 'PENDING'
-            RETURNING id_ticket, number, state`,
+            RETURNING id_ticket, number, state, id_service`,
             [counterId, oldestTicket.id]
         );
-        
+
         await client.query('COMMIT');
 
         if (updateResult.rowCount === 0) {
-            return { ticket: null, error: null };
+            return {};
         }
 
         const ticket = updateResult.rows[0];
         return {
-            ticket: {
-                id: ticket.id_ticket,
-                number: ticket.number,
-                state: ticket.state,
-                serviceName: chosenService,
-                counterId: counter.id_counter,
-                counterNumber: counter.number,
-                issuedAt: oldestTicket.issuedAt,
-            },
-            error: null,
-            };
+            id: ticket.id_ticket,
+            number: ticket.number,
+            state: ticket.state,
+            serviceId: ticket.id_service,
+            serviceName: chosenService,
+            issuedAt: oldestTicket.issuedAt,
+        };
     } catch (err) {
         await rollbackQuietly(client);
         throw err;
