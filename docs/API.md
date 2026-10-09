@@ -77,3 +77,30 @@ Returns the active queues of tickets currently in `PENDING` state, grouped by se
 | Status | Situation |
 |------------|---------|
 | 500 | Unexpected server or database error |
+
+# API specification - Next Customer
+
+## `GET /counters/:counterId/next`
+
+Returns the next ticket for a specific counter, moving the queues.
+
+### Response `200 OK`
+
+```json
+{
+  "id": "...",
+  "number": "...",
+  "state": "CALLED",
+  "serviceId": "...",
+  "serviceName": "Shipping",
+  "issuedAt": "2026-10-06T08:15:30.000Z"
+}
+```
+
+An empty ticket is a valid response (the queues are empty)
+
+### Errors
+| Status | Situation |
+|------------|---------|
+| 404 | Counter not found |
+| 500 | Unexpected server or database error |
