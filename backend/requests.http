@@ -4,7 +4,7 @@
 POST {{base}}/tickets
 Content-Type: application/json
 
-{ "serviceId": "a1ab113e-37ab-4f23-842b-8e18dbc516f1" }
+{ "serviceId": "6652bfda-fa96-46c1-a0c4-e175e1e8f16a" }
 
 ### 404 - service does not exist
 POST {{base}}/tickets
@@ -38,3 +38,8 @@ ciao
 
 ### 200 - get ticket queues
 GET {{base}}/tickets/queues
+
+@counterId = 665bc8eb-f79c-463c-8abb-58545f7fed7e
+### 200 - next customer
+GET {{base}}/counters/{{counterId}}/next
+

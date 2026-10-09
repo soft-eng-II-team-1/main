@@ -28,12 +28,21 @@ async function createTicket(serviceId) {
         await client.query('SELECT pg_advisory_xact_lock($1)', [TICKET_NUM_LOCK_KEY]);
 
         const numberResult =  await client.query(
-            `SELECT COALESCE(MAX(number::int), 0) + 1 AS next_number
-            FROM ticket
-            WHERE issue_date = CURRENT_DATE`
+            `SELECT COALESCE(MAX(substring(number FROM '[0-9]+$')::int), 0) + 1 AS next_number
+            FROM ticket 
+            WHERE issue_date = CURRENT_DATE AND id_service = $1`,
+            [service.id_service]
         );
 
-        const nextNumber = String(numberResult.rows[0].next_number);
+        const serviceInitial = service.name.trim().charAt(0).toUpperCase();
+        let next = numberResult.rows[0].next_number;
+        if(next < 10) {
+          next = `00${next}`;
+        }
+        else if(next < 100) {
+          next = `0${next}`;
+        }        
+        const nextNumber = `${serviceInitial}-${next.padStart(3, '0')}`;
 
         const insertTicket = await client.query(
             `INSERT INTO ticket (number,state, id_service)
@@ -83,7 +92,7 @@ async function getQueues(db = pool) {
       ON s.id_service = t.id_service
       AND t.state = 'PENDING'
       AND t.issue_date = CURRENT_DATE
-    ORDER BY s.name ASC, t.issue_timestamp ASC, t.number::int ASC;
+    ORDER BY s.name ASC, t.issue_timestamp ASC, substring(t.number FROM '[0-9]+$')::int ASC;
   `;
 
   const { rows } = await db.query(query);
