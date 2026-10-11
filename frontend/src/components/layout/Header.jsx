@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 
-export default function Header() {
+export default function Header({type}) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Header() {
   });
 
   return (
-    <header className="flex justify-between items-start border-b border-gray-300 pb-4 w-full">
+    <header className="flex justify-between items-start border-b border-gray-300 p-4 w-full">
       <div className="flex items-center gap-3">
         {/* Placeholder for the Post Office Logo */}
         <div
@@ -33,7 +33,7 @@ export default function Header() {
         <div>
           <h1 className="text-xl font-bold leading-tight">Post Office</h1>
           <p className="text-sm text-slate-500 tracking-wider">
-            PUBLIC SERVICE
+            {type === "client" ? "Public Service" : "Counter Queue Management"}
           </p>
         </div>
       </div>

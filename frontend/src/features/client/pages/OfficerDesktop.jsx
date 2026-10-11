@@ -1,10 +1,13 @@
 import {useCallback, useEffect, useState} from "react";
 import {callNext, getQueues} from "../../../lib/api.js";
+import Header from "../../../components/layout/Header";
 
 //set counter in .env based on database
 const COUNTER_ID = import.meta.env.VITE_COUNTER_ID;
 const COUNTER_NUMBER = String(import.meta.env.VITE_COUNTER_NUMBER ?? "").padStart(2, "0");
 
+const toQueueList = (data) =>
+  Object.entries(data).map(([name, q]) => ({name, count: q.tickets.length}));
 
 export default function OfficerDesktop() {
   const [currentTicket, setCurrentTicket] = useState(null);
@@ -15,20 +18,27 @@ export default function OfficerDesktop() {
   );
   const [message, setMessage] = useState(null);
 
-  const loadQueues = useCallback(async () => {
-    try {
-      const data = await getQueues();
-      setQueues(
-        Object.entries(data).map(([name, q]) => ({name, count: q.tickets.length})),
-      );
-    } catch (err) {
-      setError(err.message);
-    }
-  }, []);
+const loadQueues = async () => {
+  try {
+    setQueues(toQueueList(await getQueues()));
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
-  useEffect(() => {
-    loadQueues();
-  }, [loadQueues]);
+useEffect(() => {
+  let ignore = false;
+  getQueues()
+    .then((data) => {
+      if (!ignore) setQueues(toQueueList(data));
+    })
+    .catch((err) => {
+      if (!ignore) setError(err.message);
+    });
+  return () => {
+    ignore = true;
+  };
+}, []);
 
   const handleCallNext = async () => {
     setLoading(true);
@@ -57,28 +67,15 @@ export default function OfficerDesktop() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans text-[#1c2b39]">
-      {/* Header */}
-      <header className="flex justify-between items-center bg-white border-b border-gray-200 px-8 py-4">
-        <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 bg-linear-to-br from-green-500 to-orange-400 rounded-sm"
-            style={{clipPath: "polygon(0 0, 100% 50%, 0 100%)"}}
-          ></div>
-          <div className="leading-tight">
-            <h1 className="text-lg font-bold">Post Office</h1>
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider">
-              Counter Queue Management
-            </p>
-          </div>
-        </div>
+      <Header type="officer" />
+      <div className="flex justify-end px-8 pt-4">
         <div className="flex items-center gap-2 border border-gray-300 rounded-full px-4 py-1">
           <div className="w-2 h-2 rounded-full bg-[#108a5e]"></div>
-          <span className="text-sm font-medium text-gray-700">
-            Counter {COUNTER_NUMBER} - Ready
-          </span>
+            <span className="text-sm font-medium text-gray-700">
+              Counter {COUNTER_NUMBER} - Ready
+            </span>
+          </div>
         </div>
-      </header>
-
       <main className="grow flex p-8 gap-8 max-w-6xl mx-auto w-full">
         {/* Left Column: Active Queues */}
         <aside className="w-72 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm h-fit">
