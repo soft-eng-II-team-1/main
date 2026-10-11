@@ -1,4 +1,5 @@
 import {useNavigate} from "react-router-dom";
+import Header from "../../../components/layout/Header";
 
 export default function LanguageSelection() {
   const navigate = useNavigate();
@@ -21,35 +22,16 @@ export default function LanguageSelection() {
   return (
     <div className="min-h-screen bg-[#f8f9fa] flex flex-col p-8 font-sans text-[#1c2b39]">
       {/* Header */}
-      <header className="flex justify-between items-start border-b border-gray-300 pb-4 w-full">
-        <div className="flex items-center gap-3">
-          {/* Placeholder for the Post Office Logo */}
-          <div
-            className="w-12 h-12 bg-linear-to-br from-green-500 to-orange-400 rounded-sm"
-            style={{clipPath: "polygon(0 0, 100% 50%, 0 100%)"}}
-          ></div>
-          <div>
-            <h1 className="text-xl font-bold leading-tight">Post Office</h1>
-            <p className="text-sm text-slate-500 tracking-wider">
-              PUBLIC SERVICE
-            </p>
-          </div>
-        </div>
-        <div className="text-right">
-          <h2 className="text-2xl font-bold">17:24</h2>
-          <p className="text-sm text-slate-500">8 October 2026</p>
-        </div>
-      </header>
-
+      <Header />
       {/* Main Content */}
       <main className="grow flex flex-col items-center justify-center">
         <div className="text-center mb-12">
           <h1 className="text-6xl font-extrabold text-[#1c2b39] mb-4">
             Welcome
           </h1>
-          <p className="text-lg text-[#5b6b7c]">
+          {/* <p className="text-lg text-[#5b6b7c]">
             Benvenuto · Bienvenue · Willkommen · Bienvenido · Bem-vindo
-          </p>
+          </p> */}
         </div>
 
         <div className="text-center mb-8">
@@ -67,7 +49,7 @@ export default function LanguageSelection() {
             <button
               key={lang.code}
               onClick={() => handleLanguageSelect(lang.code)}
-              className="flex items-center justify-start gap-4 px-8 py-6 bg-white border border-gray-300 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all"
+              className="flex cursor-pointer items-center justify-start gap-4 px-8 py-6 bg-white border border-gray-300 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all"
             >
               <span className="text-2xl font-bold text-[#e88b23]">
                 {lang.code}

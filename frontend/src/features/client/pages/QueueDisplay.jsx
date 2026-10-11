@@ -1,3 +1,5 @@
+import Header from "../../../components/layout/Header";
+
 export default function QueueDisplay() {
   const currentCall = {number: "A-204", counter: "04", service: "Shipping"};
 
@@ -10,25 +12,7 @@ export default function QueueDisplay() {
   return (
     <div className="min-h-screen bg-[#fafafa] flex flex-col p-8 font-sans text-[#1c2b39]">
       {/* Header */}
-      <header className="flex justify-between items-end border-b border-gray-300 pb-4 mb-8">
-        <div className="flex items-center gap-4">
-          <div
-            className="w-16 h-16 bg-linear-to-br from-green-500 to-orange-400 rounded-md"
-            style={{clipPath: "polygon(0 0, 100% 50%, 0 100%)"}}
-          ></div>
-          <div className="leading-tight">
-            <h1 className="text-3xl font-bold">Post Office</h1>
-            <p className="text-sm text-gray-500 uppercase tracking-widest">
-              Public Service
-            </p>
-          </div>
-        </div>
-        <div className="text-right flex items-baseline gap-4">
-          <span className="text-xl text-gray-600">9 October 2026</span>
-          <span className="text-4xl font-bold">17:25</span>
-        </div>
-      </header>
-
+      <Header />
       <main className="grow flex gap-8">
         {/* Left Column: Current Call */}
         <section className="flex-2 flex flex-col">
