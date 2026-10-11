@@ -20,11 +20,11 @@ export default function LanguageSelection() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex flex-col p-8 font-sans text-[#1c2b39]">
+    <div className="min-h-screen bg-[#f8f9fa] flex flex-col font-sans text-[#1c2b39]">
       {/* Header */}
-      <Header />
+      <Header type="client" />
       {/* Main Content */}
-      <main className="grow flex flex-col items-center justify-center">
+      <main className="grow flex flex-col p-8 items-center justify-center">
         <div className="text-center mb-12">
           <h1 className="text-6xl font-extrabold text-[#1c2b39] mb-4">
             Welcome

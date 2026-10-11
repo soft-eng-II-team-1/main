@@ -1,4 +1,5 @@
 import {useState} from "react";
+import Header from "../../../components/layout/Header";
 
 export default function OfficerDesktop() {
   // Mock state based on the Figma design
@@ -21,27 +22,7 @@ export default function OfficerDesktop() {
   return (
     <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans text-[#1c2b39]">
       {/* Header */}
-      <header className="flex justify-between items-center bg-white border-b border-gray-200 px-8 py-4">
-        <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 bg-linear-to-br from-green-500 to-orange-400 rounded-sm"
-            style={{clipPath: "polygon(0 0, 100% 50%, 0 100%)"}}
-          ></div>
-          <div className="leading-tight">
-            <h1 className="text-lg font-bold">Post Office</h1>
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider">
-              Counter Queue Management
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 border border-gray-300 rounded-full px-4 py-1">
-          <div className="w-2 h-2 rounded-full bg-[#108a5e]"></div>
-          <span className="text-sm font-medium text-gray-700">
-            Counter 04 - Ready
-          </span>
-        </div>
-      </header>
-
+      <Header type="officer" />
       <main className="grow flex p-8 gap-8 max-w-6xl mx-auto w-full">
         {/* Left Column: Active Queues */}
         <aside className="w-72 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm h-fit">

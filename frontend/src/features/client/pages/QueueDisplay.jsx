@@ -10,10 +10,10 @@ export default function QueueDisplay() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col p-8 font-sans text-[#1c2b39]">
+    <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans text-[#1c2b39]">
       {/* Header */}
-      <Header />
-      <main className="grow flex gap-8">
+      <Header type="client" />
+      <main className="grow flex gap-8 p-8">
         {/* Left Column: Current Call */}
         <section className="flex-2 flex flex-col">
           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">
