@@ -1,0 +1,45 @@
+@base = http://localhost:3000/api/v1
+
+### 201 - ticket created
+POST {{base}}/tickets
+Content-Type: application/json
+
+{ "serviceId": "6652bfda-fa96-46c1-a0c4-e175e1e8f16a" }
+
+### 404 - service does not exist
+POST {{base}}/tickets
+Content-Type: application/json
+
+{ "serviceId": "00000000-0000-0000-0000-000000000000" }
+
+### 422 - missing serviceId
+POST {{base}}/tickets
+Content-Type: application/json
+
+{}
+
+### 422 - invalid serviceId
+POST {{base}}/tickets
+Content-Type: application/json
+
+{ "serviceId": "abc" }
+
+### 400 - JSON
+POST {{base}}/tickets
+Content-Type: application/json
+
+{ "serviceId":
+
+### 415 - wrong content type
+POST {{base}}/tickets
+Content-Type: text/plain
+
+ciao
+
+### 200 - get ticket queues
+GET {{base}}/tickets/queues
+
+@counterId = 665bc8eb-f79c-463c-8abb-58545f7fed7e
+### 200 - next customer
+GET {{base}}/counters/{{counterId}}/next
+
