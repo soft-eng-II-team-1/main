@@ -1,5 +1,6 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
+import {createTicket, getQueues, getServices} from "../../../lib/api.js";
 
 export default function GetTicket() {
   const navigate = useNavigate();
@@ -8,35 +9,48 @@ export default function GetTicket() {
   // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(null);
 
-  // Mock data to match the UI until the backend is fully wired
-  const services = [
-    {id: "shipping", name: "Shipping", queue: 8, wait: "90'"},
-    {id: "pickups", name: "Pickups", queue: 8, wait: "90'"},
-    {id: "payments", name: "Payments", queue: 8, wait: "90'"},
-    {id: "financial", name: "Financial Services", queue: 8, wait: "90'"},
-    {id: "topups", name: "Top-ups", queue: 8, wait: "90'"},
-    {id: "identity", name: "Identity Services", queue: 8, wait: "90'"},
-  ];
+  const [services, setServices] = useState([]);
+  const [queueSizes, setQueueSizes] = useState({});
+  const [loadingServices, setLoadingServices] = useState(true);  
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [list, queues] = await Promise.all([getServices(), getQueues()]);
+        setServices(list);
+        setQueueSizes(
+          Object.fromEntries(
+            Object.entries(queues).map(([name, q]) => [name, q.tickets.length]),
+          ),
+        );
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoadingServices(false);
+      }
+    }
+    load();
+  }, []);
+
 
   const handleServiceSelect = async (service) => {
     setLoading(true);
     setError(null);
     try {
-      // Replace with your actual backend call: await fetch('http://localhost:3000/api/v1/tickets', ...)
-      // Simulating network delay and backend response
-      setTimeout(() => {
-        setTicket({
-          number: "A040",
-          serviceName: service.name,
-          emittedAt: "10:38",
-          queuePosition: 8,
-          estimatedWait: 62,
-        });
-        setLoading(false);
-      }, 500);
+      const created = await createTicket(service.id);
+      setTicket({
+        number: created.number,
+        serviceName: created.serviceName,
+        emittedAt: new Date(created.issuedAt).toLocaleTimeString("it-IT", 
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      });
     } catch (err) {
       console.error("Error fetching ticket:", err);
-      setError("Failed to fetch ticket");
+      setError(err.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -109,52 +123,6 @@ export default function GetTicket() {
                 {ticket.number}
               </h2>
 
-              <div className="flex justify-center gap-12 mt-6 w-full text-[#1c2b39]">
-                <div className="flex flex-col items-center text-xs">
-                  <span className="flex items-center gap-1 text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                      />
-                    </svg>{" "}
-                    You are number
-                  </span>
-                  <span className="text-xl font-bold">
-                    {ticket.queuePosition}
-                  </span>
-                  <span className="text-gray-500">in queue</span>
-                </div>
-                <div className="flex flex-col items-center text-xs">
-                  <span className="flex items-center gap-1 text-gray-500">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>{" "}
-                    Estimated waiting time
-                  </span>
-                  <span className="text-xl font-bold">
-                    {ticket.estimatedWait}
-                  </span>
-                  <span className="text-gray-500">min</span>
-                </div>
-              </div>
             </div>
 
             {/* Ticket Footer Note */}
@@ -216,6 +184,12 @@ export default function GetTicket() {
           Select a service
         </h1>
 
+        {error && <p className="mb-4 font-medium text-red-600">{error}</p>}
+        {loadingServices && <p className="text-slate-500">Loading services...</p>}
+        {!loadingServices && !error && services.length === 0 && (
+          <p className="text-slate-500">No service available</p>
+        )}
+
         <div className="grid grid-cols-2 gap-6 w-full max-w-3xl">
           {services.map((service) => (
             <button
@@ -240,23 +214,7 @@ export default function GetTicket() {
                   >
                     <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                   </svg>{" "}
-                  {service.queue}
-                </span>
-                <span className="flex items-center gap-1">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>{" "}
-                  {service.wait}
+                  {queueSizes[service.name] ?? 0}
                 </span>
               </div>
             </button>
