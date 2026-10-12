@@ -12,6 +12,8 @@ async function request(path, options) {
 
 export const getServices = () => request("/services");
 export const getQueues = () => request("/tickets/queues");
+export const getCounterServices = (counterId) =>
+    request(`/counters/${counterId}/services`);
 
 export const createTicket = (serviceId) =>
     request("/tickets", {

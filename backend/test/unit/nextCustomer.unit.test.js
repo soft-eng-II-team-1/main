@@ -18,6 +18,38 @@ describe('Unit Tests: GET /api/v1/counters/:counterId/next', () => {
     jest.clearAllMocks();
   });
 
+  describe('Unit Tests: GET /api/v1/counters/:counterId/services', () => {
+    const validCounterId = 'c0a80101-1234-4bc1-9abc-123456789abc';
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    test('returns the services enabled for a counter', async () => {
+      const services = [
+        { id_service: '11111111-1111-1111-1111-111111111111', name: 'Shipping' },
+      ];
+      counterDao.getCounterById.mockResolvedValue({ id_counter: validCounterId, number: 1 });
+      counterDao.getCounterServices.mockResolvedValue(services);
+
+      const response = await request(app).get(`/api/v1/counters/${validCounterId}/services`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(services);
+      expect(counterDao.getCounterServices).toHaveBeenCalledWith(validCounterId);
+    });
+
+    test('returns 404 when the counter does not exist', async () => {
+      counterDao.getCounterById.mockResolvedValue(null);
+
+      const response = await request(app).get(`/api/v1/counters/${validCounterId}/services`);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Counter not found' });
+      expect(counterDao.getCounterServices).not.toHaveBeenCalled();
+    });
+  });
+
   // 422 - counterID parameter is not a valid UUID
   test('422 - counterID parameter is not a valid UUID', async () => {
     const response = await request(app).get('/api/v1/counters/invalid-uuid-123/next');

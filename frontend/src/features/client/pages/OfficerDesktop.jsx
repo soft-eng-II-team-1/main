@@ -1,5 +1,5 @@
-import {useCallback, useEffect, useState} from "react";
-import {callNext, getQueues} from "../../../lib/api.js";
+import {useEffect, useState} from "react";
+import {callNext, getCounterServices, getQueues} from "../../../lib/api.js";
 import {getServiceIcon} from "../../../lib/serviceIcons.js";
 import Header from "../../../components/layout/Header";
 
@@ -16,6 +16,7 @@ const toQueueList = (data) =>
 export default function OfficerDesktop() {
   const [currentTicket, setCurrentTicket] = useState(null);
   const [queues, setQueues] = useState([]);
+  const [enabledServices, setEnabledServices] = useState(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(
     hasValidCounterId
@@ -35,12 +36,23 @@ const loadQueues = async () => {
 useEffect(() => {
   let ignore = false;
   getQueues()
-    .then((data) => {
-      if (!ignore) setQueues(toQueueList(data));
+    .then((queueData) => {
+      if (!ignore) setQueues(toQueueList(queueData));
     })
     .catch((err) => {
       if (!ignore) setError(err.message);
     });
+  if (hasValidCounterId) {
+    getCounterServices(COUNTER_ID)
+      .then((counterServices) => {
+        if (!ignore) {
+          setEnabledServices(new Set(counterServices.map((service) => service.name)));
+        }
+      })
+      .catch((err) => {
+        if (!ignore) setError(err.message);
+      });
+  }
   return () => {
     ignore = true;
   };
@@ -93,7 +105,15 @@ useEffect(() => {
           </div>
           <ul className="space-y-4">
             {queues.map((q) => (
-              <li key={q.name} className="flex items-center justify-between">
+              <li
+                key={q.name}
+                className={`flex items-center justify-between rounded-lg px-3 py-2 ${
+                  enabledServices.has(q.name)
+                    ? "border-l-4 border-[#108a5e] bg-green-50"
+                    : ""
+                }`}
+                data-enabled={enabledServices.has(q.name)}
+              >
                 <div className="flex items-center gap-3">
                   {getServiceIcon(q.name) ? (
                     <img
@@ -109,7 +129,14 @@ useEffect(() => {
                   )}
                   <span className="text-sm text-gray-700">{q.name}</span>
                 </div>
-                <span className="text-sm font-bold">{q.count}</span>
+                <div className="flex items-center gap-3">
+                  {enabledServices.has(q.name) && (
+                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800">
+                      Enabled
+                    </span>
+                  )}
+                  <span className="text-sm font-bold">{q.count}</span>
+                </div>
               </li>
             ))}
           </ul>

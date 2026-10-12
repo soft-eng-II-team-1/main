@@ -139,6 +139,19 @@ async function getCounterById(counterId){
     }
 }
 
+async function getCounterServices(counterId) {
+    const result = await pool.query(
+        `SELECT s.id_service, s.name
+        FROM counter_service cs
+        INNER JOIN service s ON cs.id_service = s.id_service
+        WHERE cs.id_counter = $1
+        ORDER BY s.name ASC`,
+        [counterId]
+    );
+
+    return result.rows;
+}
+
 
 async function rollbackQuietly(client) {
   try {
@@ -148,4 +161,4 @@ async function rollbackQuietly(client) {
   }
 }
 
-module.exports = { callNextTicket, getCounterById };
+module.exports = { callNextTicket, getCounterById, getCounterServices };

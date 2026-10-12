@@ -14,6 +14,22 @@ const checkCounterId = [
         .isUUID().withMessage('counterId must be a valid UUID'),
 ];
 
+// GET /api/v1/counters/:counterId/services
+router.get('/:counterId/services', checkCounterId, validateRequest, async (req, res, next) => {
+    try {
+        const counter = await counterDao.getCounterById(req.params.counterId);
+
+        if (counter === null) {
+            return res.status(404).json({ error: 'Counter not found' });
+        }
+
+        const services = await counterDao.getCounterServices(counter.id_counter);
+        return res.status(200).json(services);
+    } catch (err) {
+        return next(err);
+    }
+});
+
 // GET /api/v1/counters/:counterId/next
 router.get('/:counterId/next', checkCounterId, validateRequest, async (req, res, next) => {
     try {
