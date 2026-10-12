@@ -1,8 +1,11 @@
+import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Header from "../../../components/layout/Header";
+import {LANGUAGE_STORAGE_KEY} from "../../../lib/language.js";
 
 export default function LanguageSelection() {
   const navigate = useNavigate();
+  const [selectedLanguage, setSelectedLanguage] = useState(null);
 
   const languages = [
     {code: "EN", name: "English"},
@@ -13,9 +16,9 @@ export default function LanguageSelection() {
     {code: "PT", name: "Português"},
   ];
 
-  // eslint-disable-next-line no-unused-vars
   const handleLanguageSelect = (code) => {
-    // Pass the selected language to the next screen if needed
+    setSelectedLanguage(code);
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
     navigate("/services");
   };
 
@@ -29,9 +32,9 @@ export default function LanguageSelection() {
           <h1 className="text-6xl font-extrabold text-[#1c2b39] mb-4">
             Welcome
           </h1>
-          {/* <p className="text-lg text-[#5b6b7c]">
+          <p className="text-lg text-[#5b6b7c]">
             Benvenuto · Bienvenue · Willkommen · Bienvenido · Bem-vindo
-          </p> */}
+          </p>
         </div>
 
         <div className="text-center mb-8">
@@ -49,7 +52,11 @@ export default function LanguageSelection() {
             <button
               key={lang.code}
               onClick={() => handleLanguageSelect(lang.code)}
-              className="flex cursor-pointer items-center justify-start gap-4 px-8 py-6 bg-white border border-gray-300 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-400 transition-all"
+              className={`flex cursor-pointer items-center justify-start gap-4 px-8 py-6 bg-white border-2 rounded-2xl shadow-sm hover:shadow-md active:border-[#e88b23] active:shadow-[0_0_12px_rgba(232,139,35,0.6)] focus-visible:outline-none focus-visible:border-[#e88b23] focus-visible:shadow-[0_0_12px_rgba(232,139,35,0.6)] transition-all ${
+                selectedLanguage === lang.code
+                  ? "border-[#e88b23] shadow-[0_0_12px_rgba(232,139,35,0.6)]"
+                  : "border-gray-300 hover:border-gray-400"
+              }`}
             >
               <span className="text-2xl font-bold text-[#e88b23]">
                 {lang.code}
@@ -64,7 +71,7 @@ export default function LanguageSelection() {
 
       {/* Footer */}
       <footer className="w-full text-center pb-4">
-        <p className="text-sm font-medium text-[#5b6b7c]">
+        <p className="relative -top-2 text-sm font-medium text-[#5b6b7c]">
           For assistance, please speak to our staff
         </p>
       </footer>

@@ -1,7 +1,11 @@
 import {useEffect, useState} from "react";
+import postOfficeLogo from "../../assets/images/selfhst_proton-mail.svg";
+import {getLanguageLocale, getSelectedLanguage, translate} from "../../lib/language.js";
 
 export default function Header({type}) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const language = type === "client" ? getSelectedLanguage() : "EN";
+  const locale = getLanguageLocale(language);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -10,13 +14,13 @@ export default function Header({type}) {
     return () => clearInterval(timer);
   }, []);
 
-  const timeString = currentDate.toLocaleTimeString([], {
+  const timeString = currentDate.toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
   });
 
-  const dateString = currentDate.toLocaleDateString("en-GB", {
+  const dateString = currentDate.toLocaleDateString(locale, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -25,15 +29,18 @@ export default function Header({type}) {
   return (
     <header className="flex justify-between items-start border-b border-gray-300 p-4 w-full">
       <div className="flex items-center gap-3">
-        {/* Placeholder for the Post Office Logo */}
-        <div
-          className="w-12 h-12 bg-linear-to-br from-green-500 to-orange-400 rounded-sm"
-          style={{clipPath: "polygon(0 0, 100% 50%, 0 100%)"}}
-        ></div>
+        <img
+          src={postOfficeLogo}
+          alt=""
+          aria-hidden="true"
+          className="w-12 h-12 object-contain"
+        />
         <div>
           <h1 className="text-xl font-bold leading-tight">Post Office</h1>
           <p className="text-sm text-slate-500 tracking-wider">
-            {type === "client" ? "Public Service" : "Counter Queue Management"}
+            {type === "client"
+              ? translate("publicService", language)
+              : "Counter Queue Management"}
           </p>
         </div>
       </div>
